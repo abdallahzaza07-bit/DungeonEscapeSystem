@@ -14,6 +14,9 @@ public class DungeonEscapeSystem {
         window.setResizable(false);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setLocationRelativeTo(null);
+
         window.setVisible(true);
+
+        game.requestFocusInWindow();
     }
 }
