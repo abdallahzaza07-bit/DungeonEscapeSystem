@@ -13,16 +13,13 @@ public class Game extends JPanel implements KeyListener {
 
         grid = new Grid();
 
-        char[][] dungeon = grid.getDungeon();
-
         int startRow = 0;
         int startCol = 0;
 
-        // Find player in the grid
-        for (int r = 0; r < dungeon.length; r++) {
-            for (int c = 0; c < dungeon[r].length; c++) {
+        for (int r = 0; r < grid.getRows(); r++) {
+            for (int c = 0; c < grid.getCols(); c++) {
 
-                if (dungeon[r][c] == 'P') {
+                if (grid.getTile(r, c) == 'P') {
                     startRow = r;
                     startCol = c;
                 }
@@ -41,26 +38,27 @@ public class Game extends JPanel implements KeyListener {
         super.paintComponent(g);
 
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 30));
-        g.drawString("Dungeon Escape System", 180, 60);
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+
+        g.drawString("Health: " + player.getHealth(), 20, 30);
+        g.drawString("Score: " + player.getScore(), 220, 30);
+        g.drawString("Key: " + (player.hasKey() ? "Yes" : "No"), 420, 30);
 
         drawGrid(g);
     }
 
     private void drawGrid(Graphics g) {
 
-        char[][] dungeon = grid.getDungeon();
-
         int size = 60;
 
-        for (int row = 0; row < dungeon.length; row++) {
+        for (int row = 0; row < grid.getRows(); row++) {
 
-            for (int col = 0; col < dungeon[row].length; col++) {
+            for (int col = 0; col < grid.getCols(); col++) {
 
                 int x = 100 + col * size;
-                int y = 100 + row * size;
+                int y = 80 + row * size;
 
-                char tile = dungeon[row][col];
+                char tile = grid.getTile(row, col);
 
                 switch (tile) {
 
@@ -102,24 +100,52 @@ public class Game extends JPanel implements KeyListener {
 
                 g.setColor(Color.BLACK);
                 g.drawRect(x, y, size, size);
-
             }
         }
     }
+        private void movePlayer(int newRow, int newCol) {
 
-    private void movePlayer(int newRow, int newCol) {
+        char nextTile = grid.getTile(newRow, newCol);
 
-        char[][] dungeon = grid.getDungeon();
-
-        if (dungeon[newRow][newCol] == '#') {
+        // Wall
+        if (nextTile == '#') {
             return;
         }
 
-        dungeon[player.getRow()][player.getCol()] = '.';
+        // Treasure
+        if (nextTile == 'T') {
+            player.addScore(100);
+        }
+
+        // Key
+        if (nextTile == 'K') {
+            player.pickUpKey();
+        }
+
+        // Exit
+        if (nextTile == 'E') {
+
+            if (player.hasKey()) {
+
+                JOptionPane.showMessageDialog(this,
+                        "Congratulations!\nYou escaped the dungeon!");
+
+                System.exit(0);
+
+            } else {
+
+                JOptionPane.showMessageDialog(this,
+                        "You need the key first!");
+
+                return;
+            }
+        }
+
+        grid.setTile(player.getRow(), player.getCol(), '.');
 
         player.setPosition(newRow, newCol);
 
-        dungeon[newRow][newCol] = 'P';
+        grid.setTile(newRow, newCol, 'P');
 
         repaint();
     }
@@ -132,33 +158,33 @@ public class Game extends JPanel implements KeyListener {
 
         switch (e.getKeyCode()) {
 
-            case KeyEvent.VK_UP:
             case KeyEvent.VK_W:
+            case KeyEvent.VK_UP:
                 movePlayer(row - 1, col);
                 break;
 
-            case KeyEvent.VK_DOWN:
             case KeyEvent.VK_S:
+            case KeyEvent.VK_DOWN:
                 movePlayer(row + 1, col);
                 break;
 
-            case KeyEvent.VK_LEFT:
             case KeyEvent.VK_A:
+            case KeyEvent.VK_LEFT:
                 movePlayer(row, col - 1);
                 break;
 
-            case KeyEvent.VK_RIGHT:
             case KeyEvent.VK_D:
+            case KeyEvent.VK_RIGHT:
                 movePlayer(row, col + 1);
                 break;
-
         }
-
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+    }
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 }

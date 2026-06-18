@@ -9,9 +9,9 @@ public class Player {
     public Player(int row, int col) {
         this.row = row;
         this.col = col;
-        health = 100;
-        score = 0;
-        hasKey = false;
+        this.health = 100;
+        this.score = 0;
+        this.hasKey = false;
     }
 
     public int getRow() {
@@ -29,6 +29,14 @@ public class Player {
 
     public int getHealth() {
         return health;
+    }
+
+    public void loseHealth(int amount) {
+        health -= amount;
+
+        if (health < 0) {
+            health = 0;
+        }
     }
 
     public int getScore() {
