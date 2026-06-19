@@ -1,6 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+private Grid grid;
+private Player player;
+private Monster monster;
+private Timer timer;
 
 public class Game extends JPanel implements KeyListener {
 
