@@ -1,15 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-private Grid grid;
-private Player player;
-private Monster monster;
-private Timer timer;
 
 public class Game extends JPanel implements KeyListener {
 
     private Grid grid;
     private Player player;
+    private Monster monster;
+    private Timer monsterTimer;
 
     public Game() {
 
@@ -17,28 +15,72 @@ public class Game extends JPanel implements KeyListener {
 
         grid = new Grid();
 
-        int startRow = 0;
-        int startCol = 0;
+        int playerRow = 0;
+        int playerCol = 0;
+
+        int monsterRow = 0;
+        int monsterCol = 0;
 
         for (int r = 0; r < grid.getRows(); r++) {
+
             for (int c = 0; c < grid.getCols(); c++) {
 
                 if (grid.getTile(r, c) == 'P') {
-                    startRow = r;
-                    startCol = c;
+                    playerRow = r;
+                    playerCol = c;
+                }
+
+                if (grid.getTile(r, c) == 'M') {
+                    monsterRow = r;
+                    monsterCol = c;
                 }
 
             }
+
         }
 
-        player = new Player(startRow, startCol);
+        player = new Player(playerRow, playerCol);
+        monster = new Monster(monsterRow, monsterCol);
+
+        monsterTimer = new Timer(700, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                monster.moveTowards(player, grid);
+
+                if (monster.getRow() == player.getRow()
+                        && monster.getCol() == player.getCol()) {
+
+                    player.loseHealth(monster.getDamage());
+
+                    if (player.getHealth() <= 0) {
+
+                        JOptionPane.showMessageDialog(null,
+                                "Game Over!");
+
+                        System.exit(0);
+
+                    }
+
+                }
+
+                repaint();
+
+            }
+
+        });
+
+        monsterTimer.start();
 
         setFocusable(true);
         addKeyListener(this);
+
     }
 
     @Override
     protected void paintComponent(Graphics g) {
+
         super.paintComponent(g);
 
         g.setColor(Color.WHITE);
@@ -49,6 +91,7 @@ public class Game extends JPanel implements KeyListener {
         g.drawString("Key: " + (player.hasKey() ? "Yes" : "No"), 420, 30);
 
         drawGrid(g);
+
     }
 
     private void drawGrid(Graphics g) {
@@ -104,8 +147,12 @@ public class Game extends JPanel implements KeyListener {
 
                 g.setColor(Color.BLACK);
                 g.drawRect(x, y, size, size);
+
+                
             }
+
         }
+
     }
         private void movePlayer(int newRow, int newCol) {
 
@@ -152,6 +199,7 @@ public class Game extends JPanel implements KeyListener {
         grid.setTile(newRow, newCol, 'P');
 
         repaint();
+
     }
 
     @Override
@@ -181,14 +229,19 @@ public class Game extends JPanel implements KeyListener {
             case KeyEvent.VK_RIGHT:
                 movePlayer(row, col + 1);
                 break;
+
         }
+
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
+
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
+
     }
+
 }

@@ -6,36 +6,35 @@ public class Monster extends Enemy {
 
     public void moveTowards(Player player, Grid grid) {
 
-        int nextRow = row;
-        int nextCol = col;
+        int newRow = row;
+        int newCol = col;
 
-        if (Math.abs(player.getRow() - row) >
-                Math.abs(player.getCol() - col)) {
+        if (Math.abs(player.getRow() - row) >= Math.abs(player.getCol() - col)) {
 
             if (player.getRow() < row)
-                nextRow--;
+                newRow--;
             else if (player.getRow() > row)
-                nextRow++;
+                newRow++;
 
         } else {
 
             if (player.getCol() < col)
-                nextCol--;
+                newCol--;
             else if (player.getCol() > col)
-                nextCol++;
+                newCol++;
 
         }
 
-        if (grid.getTile(nextRow, nextCol) == '.'
-                || grid.getTile(nextRow, nextCol) == 'P') {
+        char tile = grid.getTile(newRow, newCol);
+
+        if (tile == '.' || tile == 'P') {
 
             grid.setTile(row, col, '.');
 
-            row = nextRow;
-            col = nextCol;
+            row = newRow;
+            col = newCol;
 
             grid.setTile(row, col, 'M');
         }
-
     }
 }
