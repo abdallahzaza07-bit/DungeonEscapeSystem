@@ -1,40 +1,42 @@
+import java.awt.Point;
+
 public class Monster extends Enemy {
 
+    private Pathfinder pathfinder;
+
     public Monster(int row, int col) {
+
         super(row, col, 20);
+
+        pathfinder = new Pathfinder();
+
     }
 
     public void moveTowards(Player player, Grid grid) {
 
-        int newRow = row;
-        int newCol = col;
+        Point next = pathfinder.getNextMove(
+                grid.getDungeon(),
+                row,
+                col,
+                player.getRow(),
+                player.getCol());
 
-        if (Math.abs(player.getRow() - row) >= Math.abs(player.getCol() - col)) {
+        if (next.x == row && next.y == col)
+            return;
 
-            if (player.getRow() < row)
-                newRow--;
-            else if (player.getRow() > row)
-                newRow++;
-
-        } else {
-
-            if (player.getCol() < col)
-                newCol--;
-            else if (player.getCol() > col)
-                newCol++;
-
-        }
-
-        char tile = grid.getTile(newRow, newCol);
+        char tile = grid.getTile(next.x, next.y);
 
         if (tile == '.' || tile == 'P') {
 
             grid.setTile(row, col, '.');
 
-            row = newRow;
-            col = newCol;
+            row = next.x;
+            col = next.y;
 
             grid.setTile(row, col, 'M');
+
         }
+
     }
+
 }
