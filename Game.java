@@ -2,18 +2,26 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+
 public class Game extends JPanel implements KeyListener {
 
     private Grid grid;
     private Player player;
     private Monster monster;
+    private Leaderboard leaderboard;
+
     private Timer monsterTimer;
+    private SaveManager saveManager;
 
     public Game() {
 
         setBackground(Color.BLACK);
 
         grid = new Grid();
+        MazeGenerator generator = new MazeGenerator();
+generator.generate(grid.getDungeon());
+        saveManager = new SaveManager();
+        leaderboard = new Leaderboard();
 
         int playerRow = 0;
         int playerCol = 0;
@@ -42,7 +50,7 @@ public class Game extends JPanel implements KeyListener {
         player = new Player(playerRow, playerCol);
         monster = new Monster(monsterRow, monsterCol);
 
-        monsterTimer = new Timer(700, new ActionListener() {
+       monsterTimer = new Timer(Difficulty.getSpeed(), new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -148,39 +156,44 @@ public class Game extends JPanel implements KeyListener {
                 g.setColor(Color.BLACK);
                 g.drawRect(x, y, size, size);
 
-                
             }
 
         }
 
-    }
-        private void movePlayer(int newRow, int newCol) {
+    }     private void movePlayer(int newRow, int newCol) {
+
+        if (newRow < 0 || newRow >= grid.getRows()
+                || newCol < 0 || newCol >= grid.getCols()) {
+            return;
+        }
 
         char nextTile = grid.getTile(newRow, newCol);
 
-        // Wall
         if (nextTile == '#') {
             return;
         }
 
-        // Treasure
         if (nextTile == 'T') {
             player.addScore(100);
         }
 
-        // Key
         if (nextTile == 'K') {
             player.pickUpKey();
         }
 
-        // Exit
         if (nextTile == 'E') {
 
             if (player.hasKey()) {
 
                 JOptionPane.showMessageDialog(this,
                         "Congratulations!\nYou escaped the dungeon!");
+                    
+                        leaderboard.addScore(player.getScore());
 
+JOptionPane.showMessageDialog(
+    this,
+    leaderboard.getScores()
+);
                 System.exit(0);
 
             } else {
@@ -190,6 +203,7 @@ public class Game extends JPanel implements KeyListener {
 
                 return;
             }
+
         }
 
         grid.setTile(player.getRow(), player.getCol(), '.');
@@ -204,6 +218,31 @@ public class Game extends JPanel implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+
+        if (e.getKeyCode() == KeyEvent.VK_F5) {
+
+            saveManager.save(player, monster);
+
+            JOptionPane.showMessageDialog(this,
+                    "Game Saved!");
+
+            return;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_F9) {
+
+            saveManager.load(player, monster);
+
+            grid.setTile(player.getRow(), player.getCol(), 'P');
+            grid.setTile(monster.getRow(), monster.getCol(), 'M');
+
+            repaint();
+
+            JOptionPane.showMessageDialog(this,
+                    "Game Loaded!");
+
+            return;
+        }
 
         int row = player.getRow();
         int col = player.getCol();
@@ -245,3 +284,4 @@ public class Game extends JPanel implements KeyListener {
     }
 
 }
+        

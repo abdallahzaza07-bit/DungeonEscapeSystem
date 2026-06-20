@@ -15,6 +15,20 @@ public class Grid {
 
     };
 
+    public Grid() {
+
+        MazeGenerator maze = new MazeGenerator();
+
+        maze.generate(dungeon);
+
+        dungeon[1][1] = 'P';
+        dungeon[4][3] = 'M';
+        dungeon[1][8] = 'K';
+        dungeon[5][6] = 'T';
+        dungeon[7][8] = 'E';
+
+    }
+
     public char[][] getDungeon() {
         return dungeon;
     }
@@ -34,4 +48,5 @@ public class Grid {
     public int getCols() {
         return dungeon[0].length;
     }
+
 }
