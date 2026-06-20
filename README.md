@@ -8,7 +8,6 @@ Features
 Player Movement
 Monster AI Pathfinding (BFS)
 Recursive Maze Generation
-Save and Load System (F5 / F9)
 Difficulty Selection
 Score System
 Leaderboard
